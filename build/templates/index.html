@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>XFS</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="manifest" href="/static/manifest.json">
+    <script src="/static/htmx.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker
+                    .register("/static/service-worker.js")
+                    .then(res => console.log("service worker registered"))
+                    .catch(err => console.log("service worker not registered", err))
+            })
+        }
+        self.addEventListener("fetch", fetchEvent => {
+            fetchEvent.respondWith(
+                caches.match(fetchEvent.request).then(res => {
+                    return res || fetch(fetchEvent.request)
+                })
+            )
+        });
+        function go_home() {
+            // make POST request to /gohome, which will redirect to /
+            $.post("/gohome", function (data, status) {
+                window.location.href = "/";
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="cover">
+    </div>
+
+    <div class="header">
+        {{ if eq .Folder "/" }}
+
+        {{else}}
+        <div class="back" onclick="window.history.back();">
+            <img src="/static/back.svg" alt="back" class="back-button" id="back-button">
+        </div>
+
+        {{end}}
+        <div class="title">
+            <h1> XFS </h1>
+        </div>
+
+    </div>
+    <div class="sidebar">
+        <img src="/static/folder.png" alt="logo" class="logo" onclick="go_home()">
+        <div class="name">
+            <h1> XFS </h1>
+        </div>
+        {{ range .Drives }}
+
+        <div class="drive" hx-post="/setdir/{{.}}" hx-trigger="click" hx-swap="innerHTML" hx-target="#holder">
+            {{ . }}
+        </div>
+
+        {{ end }}
+    </div>
+
+    <div class="loader" hx-get="/grid{{ .Folder }}" hx-trigger="load" hx-swap="innerHTML" hx-target="#holder">
+    </div>
+
+    <div id="holder">
+    </div>
+</body>
+
+</html>
