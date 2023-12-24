@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"dir/back"
 	"dir/front"
 )
@@ -10,8 +10,19 @@ func main() {
 
 	port := 8080
 
-	go back.Run(false, port)
+	ctx, cancel := context.WithCancel(context.Background())
 
-	front.Run(port)
+	defer cancel()
 
+	go func() {
+		back.Run(false, port)
+		cancel()
+	}()
+
+	go func() {
+		front.Run(port)
+		cancel()
+	}()
+
+	<-ctx.Done()
 }
