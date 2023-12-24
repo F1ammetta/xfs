@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	github.com/a-h/templ v0.2.476 // indirect
+	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chai2010/webp v1.1.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
