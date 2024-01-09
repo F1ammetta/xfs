@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"syscall"
 
@@ -79,6 +80,7 @@ func grid(c *gin.Context) {
 	ReadFiles(dir, c)
 	// trim urls
 	parsedFiles = TrimDir(abs_dir)
+	parsedFiles = SortType(parsedFiles)
 	for i, file := range parsedFiles {
 		if i > len(parsedFiles)-1 {
 			break
@@ -101,6 +103,25 @@ func grid(c *gin.Context) {
 		Files: parsedFiles,
 	}
 	tmpl.Execute(c.Writer, data)
+}
+
+func SortType(files []File) []File {
+
+	// sort by extension first and then by type, so videos go before images, etc.
+	sort.Slice(files, func(i, j int) bool {
+		if files[i].IsDir && !files[j].IsDir {
+			return true
+		}
+		if !files[i].IsDir && files[j].IsDir {
+			return false
+		}
+		if files[i].Ext == files[j].Ext {
+			return files[i].Type < files[j].Type
+		}
+		return files[i].Ext < files[j].Ext
+	})
+
+	return files
 }
 
 func ReadFiles(path string, c *gin.Context) {
