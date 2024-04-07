@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
 	// "path/filepath"
 	"strings"
 
@@ -20,13 +21,13 @@ var dir = ""
 
 var abs_dir = dir
 
-func Run(tls bool, port int) {
+func Run(port int) {
 
 	gin.SetMode(gin.ReleaseMode)
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = io.Discard
 
-	// createPreviews(dir)
+	createPreviews(dir)
 
 	// set up cert
 
@@ -83,14 +84,7 @@ func Run(tls bool, port int) {
 
 	fmt.Println("Starting server on port ", port)
 	var err error
-	if tls {
-		certpath := "C:\\Certbot\\live\\soncore.sytes.net"
-		cert := certpath + "\\fullchain.pem"
-		key := certpath + "\\privkey.pem"
-		err = r.RunTLS(":"+fmt.Sprint(port), cert, key)
-	} else {
-		err = r.Run(":" + fmt.Sprint(port))
-	}
+	err = r.Run("localhost:" + fmt.Sprint(port))
 	if err != nil {
 		fmt.Println("Error starting server: ", err)
 		os.Exit(1)

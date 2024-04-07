@@ -43,7 +43,7 @@ html {
   width: 100%;
   height: auto;
   border-radius: 8px;
-  /* Ensure the image corners match the item's corners */
+  object-fit: cover;
   margin: 0;
 }
 
